@@ -1,33 +1,102 @@
-import React from 'react';
-import { Form, Card, Input, Dropdown, Button, Item} from "semantic-ui-react"
-import { useSelector } from 'react-redux';
+import React from "react";
+import {
+  Form,
+  Card,
+  Input,
+  Dropdown,
+  Button,
+  Item,
+  PlaceholderParagraph
+} from "semantic-ui-react";
+import { DateInput, TimeInput } from "semantic-ui-calendar-react";
+import { useSelector, useDispatch } from "react-redux";
 
+export default function PointRegistration() {
+  const stateData = useSelector(state => state.user);
+  const dispatch = useDispatch();
 
-export default function PointRegistration (){
+  const namedrop = stateData.user.map(item => {
+    return { key: item.id, value: item.name, text: item.name };
+  });
 
-const stateData = useSelector(state=> state.user);
+  const option = [
+    { key: 0, value: "enter", text: "Entrada" },
+    { key: 1, value: "enter_lunch", text: "Inicio do Almoço" },
+    { key: 2, value: "exit_lunch", text: "Fim do Almoço" },
+    { key: 3, value: "exit", text: "Saída" }
+  ];
 
-   return ( 
-       <Card centered>
-           <Card.Content>
-                <Card.Header>Registro do Ponto</Card.Header>
-                <Card.Description>
-                    <Form>
-                        <Form.Field>
-                            <label>Nome</label>
-                            <Dropdown>
-                                <Dropdown.Menu>
-                                    {stateData.user.map(
-                                        item=> <Dropdown.Item text={item.name}/>
-                                    )}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Form.Field>
-                        <Form.Field>
-                            <Dropdown></Dropdown>
-                        </Form.Field>
-                    </Form>
-                </Card.Description>
-           </Card.Content>
-       </Card>
-   )}
+  const handlechange = (e, { value, placeholder }) => {
+    console.log(namedrop);
+
+    switch (placeholder) {
+      case "Nome":
+        return dispatch({
+          type: "ADD_TEMP_DATE",
+          name: value
+        });
+      case "Selecionar":
+            return dispatch({
+                type: "ADD_TEMP_DATE",
+                register: value
+              });
+      case "Selecionar Dia":
+            return dispatch({
+                type: "ADD_TEMP_DATE",
+                date: value
+              });
+      case "Selecionar Hora":
+            return dispatch({
+                type: "ADD_TEMP_DATE",
+                hour: value
+              });
+    }
+  };
+  const reg = () => {};
+
+  return (
+    <Card centered>
+      <Card.Content>
+        <Card.Header>Registro do Ponto</Card.Header>
+        <Card.Description>
+          <Form>
+            <Form.Field>
+              <label>Nome</label>
+              <Dropdown
+                fluid
+                placeholder="Nome"
+                onChange={handlechange}
+                options={namedrop}
+              />
+            </Form.Field>
+            <Form.Field>
+              <Dropdown
+                onChange={handlechange}
+                fluid
+                placeholder="Selecionar"
+                options={option}
+              />
+            </Form.Field>
+            <Form.Field>
+              <DateInput
+                placeholder="Selecionar Dia"
+                onChange={handlechange}
+              ></DateInput>
+            </Form.Field>
+            <Form.Field>
+              <TimeInput
+                placeholder="Selecionar Hora"
+                onChange={handlechange}
+              ></TimeInput>
+            </Form.Field>
+            <Form.Field>
+              <Button fluid onClick={reg}>
+                Registrar
+              </Button>
+            </Form.Field>
+          </Form>
+        </Card.Description>
+      </Card.Content>
+    </Card>
+  );
+}
